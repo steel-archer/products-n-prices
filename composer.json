@@ -1,0 +1,11 @@
+{
+    "name": "steel-archer/products-n-prices",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Bohdan Sokulskyi",
+            "email": "steelarcher@gmail.com"
+        }
+    ],
+    "require": {}
+}
