@@ -1,1 +1,7 @@
-Find template
+Find results:
+Product code: <u>{{ code }}</u>
+{% if result is empty %}
+    No product with such name
+{% else %}
+    <pre>{{ result }}</pre>
+{% endif %}

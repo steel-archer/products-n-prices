@@ -11,6 +11,14 @@ use PNP\Components\DbEntities\ProductMapper;
 class Product
 {
     /**
+     * Product constructor.
+     */
+    public function __construct()
+    {
+        $this->setMapper(new ProductMapper());
+    }
+
+    /**
      * @var ProductMapper
      */
     private $mapper;
@@ -25,19 +33,21 @@ class Product
 
     /**
      * @param ProductMapper $mapper
+     * @return Product
      */
-    public function setMapper(ProductMapper $mapper)
+    public function setMapper(ProductMapper $mapper): Product
     {
         $this->mapper = $mapper;
+        return $this;
     }
 
     /**
      * @param string $code
      * @return array
      */
-    public function get(string $code) : array
+    public function find(string $code) : array
     {
-
+        return $this->getMapper()->find($code);
     }
 
     /**

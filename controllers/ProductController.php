@@ -2,19 +2,45 @@
 
 namespace PNP\Controllers;
 
+use PNP\Components\Product;
+
 /**
  * Class ProductController
  * @package PNP\Controllers
  */
 class ProductController extends Controller
 {
-    public function find(array $attrs): void
+    /**
+     * Finds a product
+     * @param string $code
+     * @throws \Exception
+     */
+    public function find(string $code): void
     {
-        $this->render('find', $attrs);
+        $result = (new Product())->find($code);
+        $this->render(
+            'find',
+            [
+                'code'   => $code,
+                'result' => json_encode($result),
+            ]
+        );
     }
 
-    public function save(array $attrs): void
+    /**
+     * Saves a product
+     * @param string $code
+     * @param array $attrs
+     * @throws \Exception
+     */
+    public function save(string $code, array $attrs): void
     {
-        $this->render('save', $attrs);
+        $this->render(
+            'save',
+            [
+                'code'  => $code,
+                'attrs' => $attrs,
+            ]
+        );
     }
 }
