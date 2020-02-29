@@ -8,6 +8,7 @@
         }
     ],
     "require": {
+        "twig/twig": "^3.0",
         "go/db": ">=2.2.13"
     },
     "autoload": {
