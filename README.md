@@ -22,5 +22,5 @@ composer install
 ```
 cp configs/config_local.php.template configs/config_local.php
 ```
-* In this file replace ##PASSWORD## with your mysql password.
+* In this file replace `##PASSWORD##` with your mysql password.
 * (If necessary, also replace `localhost` in this file with your mysql server address)
