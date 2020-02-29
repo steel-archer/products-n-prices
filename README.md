@@ -3,7 +3,7 @@ Getting Started
 * If you do not have [Composer](https://getcomposer.org/doc/00-intro.md), install it.
 * Clone repo from [https://github.com/steel-archer/products-n-prices](https://github.com/steel-archer/products-n-prices)
 ```
-git clone https://github.com/steel-archer/sdm sdm
+git clone https://github.com/steel-archer/products-n-prices products-n-prices
 ```
 * Go to your project directory.
 ```
