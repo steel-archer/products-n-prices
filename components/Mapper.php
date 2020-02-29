@@ -1,6 +1,6 @@
 <?php
 
-namespace PNP;
+namespace PNP\Components;
 
 abstract class Mapper
 {

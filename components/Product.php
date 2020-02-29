@@ -1,8 +1,8 @@
 <?php
 
-namespace PNP;
+namespace PNP\Components;
 
-use PNP\ProductMapper;
+use PNP\Components\ProductMapper;
 
 class Product
 {

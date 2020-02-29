@@ -1,6 +1,6 @@
 <?php
 
-namespace PNP;
+namespace PNP\Components;
 
 class ProductMapper extends Mapper
 {
