@@ -7,5 +7,16 @@
             "email": "steelarcher@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "go/db": ">=2.2.13"
+    },
+    "autoload": {
+        "psr-4": {
+            "PNP\\Components\\": "components/",
+            "PNP\\Controllers\\": "controllers/"
+        },
+        "files": [
+            "components/helpers.php"
+        ]
+    }
 }

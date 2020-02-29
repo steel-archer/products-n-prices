@@ -1,0 +1,73 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "445dcba051b9e01f150e4c4babcf7f22",
+    "packages": [
+        {
+            "name": "go/db",
+            "version": "2.2.13",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vasa-c/go-db.git",
+                "reference": "ce1ecc46edb1069e8116b77b1dcc2651337539a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vasa-c/go-db/zipball/ce1ecc46edb1069e8116b77b1dcc2651337539a2",
+                "reference": "ce1ecc46edb1069e8116b77b1dcc2651337539a2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "go\\DB\\": "goDB/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oleg Grigoriev",
+                    "email": "go.vasac@gmail.com",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Alex Polev",
+                    "email": "alex.v.polev@gmail.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Michael",
+                    "role": "Contributor"
+                }
+            ],
+            "description": "Database library",
+            "homepage": "https://github.com/vasa-c/go-db",
+            "keywords": [
+                "database",
+                "mysql",
+                "mysqli",
+                "placeholders",
+                "postgresql",
+                "sqlite"
+            ],
+            "time": "2018-01-17T10:02:05+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
