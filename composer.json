@@ -17,6 +17,7 @@
             "PNP\\Controllers\\": "controllers/"
         },
         "files": [
+            "configs/config.php",
             "components/helpers.php"
         ]
     }

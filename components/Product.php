@@ -2,11 +2,14 @@
 
 namespace PNP\Components;
 
-use PNP\Components\ProductMapper;
+use PNP\Components\DbEntities\ProductMapper;
 
+/**
+ * Class Product
+ * @package PNP\Components
+ */
 class Product
 {
-
     /**
      * @var ProductMapper
      */
