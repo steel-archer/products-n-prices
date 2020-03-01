@@ -49,11 +49,76 @@ class ProductMapper extends Mapper
     /**
      * @param string $code
      * @param array $attrs
-     * @return array
+     * @return array of errors
      */
     public function save(string $code, array $attrs): array
     {
-        return [];
+        $errors = [];
+
+        $this->getConnection()->query('SET autocommit = 0');
+        $this->getConnection()->query('START TRANSACTION');
+
+        try {
+            $params = [
+                'code'                   => $code,
+                'description'            => $attrs['description'],
+                'normal_price_override'  => $attrs['normal_price_override'] ?? false,
+                'special_price_override' => $attrs['special_price_override'] ?? false,
+            ];
+            $query = 'INSERT INTO
+                          products (code, description, normal_price_override, special_price_override)
+                      VALUES
+                          (?:code, ?:description, ?b:normal_price_override, ?b:special_price_override)
+                      ON DUPLICATE KEY UPDATE
+                          description = VALUES(description),
+                          normal_price_override = VALUES(normal_price_override),
+                          special_price_override = VALUES(special_price_override)';
+            $this->getConnection()->query($query, $params);
+
+            if (is_array($attrs['normal_price'])) {
+                $values = [];
+                foreach ($attrs['normal_price'] as $currency => $price) {
+                    $values[] = [
+                        'product_code'  => $code,
+                        'currency_code' => $currency,
+                        'price'         => $price,
+                    ];
+                }
+                $params = [$values];
+                $query = 'INSERT INTO
+                              normal_prices (product_code, currency_code, price)
+                          VALUES ?v
+                          ON DUPLICATE KEY UPDATE
+                              currency_code = VALUES(currency_code),
+                              price = VALUES(price)';
+                $this->getConnection()->query($query, $params);
+            }
+
+            if (is_array($attrs['special_price'])) {
+                $values = [];
+                foreach ($attrs['special_price'] as $currency => $price) {
+                    $values[] = [
+                        'product_code'  => $code,
+                        'currency_code' => $currency,
+                        'price'         => $price,
+                    ];
+                }
+                $params = [$values];
+                $query = 'INSERT INTO
+                              special_prices (product_code, currency_code, price)
+                          VALUES ?v
+                          ON DUPLICATE KEY UPDATE
+                              currency_code = VALUES(currency_code),
+                              price = VALUES(price)';
+                $this->getConnection()->query($query, $params);
+            }
+            $this->getConnection()->query('COMMIT');
+        } catch (\Exception $ex) {
+            $this->getConnection()->query('ROLLBACK');
+            $errors[] = "Can't save a product with code {$code}, error: {$ex->getMessage()}";
+        }
+
+        return $errors;
     }
 
     /**
