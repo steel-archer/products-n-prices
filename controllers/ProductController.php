@@ -21,7 +21,7 @@ class ProductController extends Controller
         if (empty($request['code'])) {
             $params = [];
         } else {
-            $code   = $request['code'];
+            $code   = trim($request['code']);
             $result = (new Product(new ProductMapper()))->find($code);
             $params = [
                 'code'   => $code,
@@ -29,7 +29,7 @@ class ProductController extends Controller
             ];
         }
 
-        $this->render('find', $params);
+        $this->render('product/find', $params);
     }
 
     /**
@@ -43,7 +43,7 @@ class ProductController extends Controller
         $errors = (new Product(new ProductMapper()))->save($code, $attrs);
 
         $this->render(
-            'save',
+            'product/save',
             [
                 'errors' => $errors,
             ]

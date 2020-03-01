@@ -2,23 +2,19 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-$action  = $_REQUEST['action'];
-$code    = trim($_REQUEST['code']);
-$request = [];
-
-$controller = new \PNP\Controllers\ProductController();
+$action = $_REQUEST['action'];
 
 switch ($action) {
     case 'find':
-        if (!empty($code)) {
-            $request['code'] = $code;
-        }
-        $controller->find($request);
+        $controller = new \PNP\Controllers\ProductController();
+        $controller->find($_REQUEST);
         break;
     case 'save':
-        $controller->save($code, []);
+        $controller = new \PNP\Controllers\ProductController();
+        //$controller->save($code, []);
         break;
     default:
-        //throw new \DomainException("Unknown action '{$action}'");
+        $controller = new \PNP\Controllers\BasicController();
+        $controller->error404();
         break;
 }
