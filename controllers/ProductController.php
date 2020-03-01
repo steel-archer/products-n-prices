@@ -13,19 +13,23 @@ class ProductController extends Controller
 {
     /**
      * Finds a product
-     * @param string $code
+     * @param array $request
      * @throws \Exception
      */
-    public function find(string $code): void
+    public function find(array $request): void
     {
-        $result = (new Product(new ProductMapper()))->find($code);
-        $this->render(
-            'find',
-            [
+        if (empty($request['code'])) {
+            $params = [];
+        } else {
+            $code   = $request['code'];
+            $result = (new Product(new ProductMapper()))->find($code);
+            $params = [
                 'code'   => $code,
-                'result' => json_encode($result, JSON_PRESERVE_ZERO_FRACTION),
-            ]
-        );
+                'result' => $result ? json_encode($result, JSON_PRESERVE_ZERO_FRACTION) : [],
+            ];
+        }
+
+        $this->render('find', $params);
     }
 
     /**

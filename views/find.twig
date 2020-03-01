@@ -1,7 +1,13 @@
-Find results:
-Product code: <u>{{ code }}</u>
-{% if result is empty %}
-    No product with such name
-{% else %}
-    <pre>{{ result }}</pre>
-{% endif %}
+<h1>Find results:</h1>
+<form name="find" method="post">
+    Product code: <input type="text" name="code" id="code" size="20" value="{{ code }}">
+    <input type="submit" value="Find">
+    <br><br>
+    {%  if code is not empty %}
+        {% if result is empty %}
+            No product with such name
+        {% else %}
+            <textarea rows="5" cols="70">{{ result }}</textarea>
+        {% endif %}
+    {% endif %}
+</form>

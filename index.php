@@ -2,37 +2,23 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-$action = 'save'; // There should be an action
-$request  = [
-    'code'  => 'Test product',
-    'attrs' => [
-        'description' => 'product description',
-        'normal_price_override' => false,
-        'normal_price' => [
-            'GBP' => 10.00,
-            'USD' => 20.00,
-            'CAD' => 30.00,
-        ],
-        'special_price_override' => true,
-        'special_price' => [
-            'GBP' => 1.00,
-            'USD' => 2.00,
-            'CAD' => 3.00,
-        ],
-    ],
-]; // There should be attrs
-$request['attrs'] = trimArray($request['attrs']);
+$action  = $_REQUEST['action'];
+$code    = trim($_REQUEST['code']);
+$request = [];
 
 $controller = new \PNP\Controllers\ProductController();
 
 switch ($action) {
     case 'find':
-        $controller->find($request['code']);
+        if (!empty($code)) {
+            $request['code'] = $code;
+        }
+        $controller->find($request);
         break;
     case 'save':
-        $controller->save($request['code'], $request['attrs']);
+        $controller->save($code, []);
         break;
     default:
-        throw new \DomainException("Unknown action '{$action}'");
+        //throw new \DomainException("Unknown action '{$action}'");
         break;
 }
