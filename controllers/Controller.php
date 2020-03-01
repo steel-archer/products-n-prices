@@ -24,7 +24,7 @@ abstract class Controller
 
         if ($twig === null) {
             $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/../views');
-            $twig = new \Twig\Environment($loader);
+            $twig   = new \Twig\Environment($loader);
         }
 
         try {

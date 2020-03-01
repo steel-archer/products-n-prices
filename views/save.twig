@@ -1,1 +1,10 @@
-Save template
+Save results:
+{% if errors is empty %}
+    No errors
+{% else %}
+    <ul>
+    {% for error in errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}

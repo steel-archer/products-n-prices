@@ -2,7 +2,6 @@
 
 namespace PNP\Components\DbEntities;
 
-
 /**
  * Class ProductMapper
  * @package PNP\Components\DbEntities
@@ -16,7 +15,14 @@ class ProductMapper extends Mapper
     public function find(string $code): array
     {
         $params   = ['code' => $code];
-        $query    = 'SELECT description, normal_price_override, special_price_override FROM products WHERE code = ?:code';
+        $query    = 'SELECT
+                        description,
+                        normal_price_override,
+                        special_price_override
+                    FROM
+                        products
+                    WHERE
+                        code = ?:code';
         $products = $this->getConnection()->query($query, $params)->row();
 
         if (!empty($products)) {
@@ -38,5 +44,30 @@ class ProductMapper extends Mapper
         }
 
         return [];
+    }
+
+    /**
+     * @param string $code
+     * @param array $attrs
+     * @return array
+     */
+    public function save(string $code, array $attrs): array
+    {
+        return [];
+    }
+
+    /**
+     * Return data in the format [currency => rate]
+     * @return array
+     * @throws \Exception
+     */
+    public function getRates(): array
+    {
+        $query  = 'SELECT code, exchange_rate FROM currencies';
+        $result = $this->getConnection()->query($query)->vars();
+        if (empty($result)) {
+            throw new \Exception("Can't get currencies rates");
+        }
+        return $result;
     }
 }

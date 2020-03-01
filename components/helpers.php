@@ -14,3 +14,20 @@ function pr($data)
     }
     echo $output;
 }
+
+/**
+ * Recursively trims array content
+ * @param array $arr
+ * @return array
+ */
+function trimArray(array $arr)
+{
+    foreach ($arr as &$value) {
+        if (is_array($value)) {
+            $value = trimArray($value);
+        } else {
+            $value = trim($value);
+        }
+    }
+    return $arr;
+}

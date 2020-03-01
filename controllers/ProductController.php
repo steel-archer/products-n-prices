@@ -2,6 +2,7 @@
 
 namespace PNP\Controllers;
 
+use PNP\Components\DbEntities\ProductMapper;
 use PNP\Components\Product;
 
 /**
@@ -17,7 +18,7 @@ class ProductController extends Controller
      */
     public function find(string $code): void
     {
-        $result = (new Product())->find($code);
+        $result = (new Product(new ProductMapper()))->find($code);
         $this->render(
             'find',
             [
@@ -35,11 +36,12 @@ class ProductController extends Controller
      */
     public function save(string $code, array $attrs): void
     {
+        $errors = (new Product(new ProductMapper()))->save($code, $attrs);
+
         $this->render(
             'save',
             [
-                'code'  => $code,
-                'attrs' => $attrs,
+                'errors' => $errors,
             ]
         );
     }
