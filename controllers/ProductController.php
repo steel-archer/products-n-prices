@@ -23,7 +23,7 @@ class ProductController extends Controller
             'find',
             [
                 'code'   => $code,
-                'result' => json_encode($result),
+                'result' => json_encode($result, JSON_PRESERVE_ZERO_FRACTION),
             ]
         );
     }

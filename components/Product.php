@@ -11,6 +11,9 @@ use PNP\Components\DbEntities\ProductMapper;
  */
 class Product
 {
+    /**
+     * Base currency
+     */
     public const BASE_CURRENCY = 'GBP';
 
     /**
@@ -66,8 +69,13 @@ class Product
         if (empty($errors)) {
             $attrs  = $result['attrs'];
             $attrs  = $this->transform($attrs);
-            $errors = $this->getMapper()->save($code, $attrs);
+            // This check should be done after prices transform, so we can't move it to validation
+            $errors = $this->checkSpecialPrice($attrs);
+            if (empty($errors)) {
+                $errors = $this->getMapper()->save($code, $attrs);
+            }
         }
+
         return $errors;
     }
 
@@ -123,6 +131,9 @@ class Product
                     }
                 }
             }
+            if (empty($validatedAttrs['normal_price'][self::BASE_CURRENCY])) {
+                $errors[] = "Provide normal_price for base currency (" . self::BASE_CURRENCY . ')';
+            }
         }
 
         // Special price override
@@ -153,12 +164,13 @@ class Product
                         $normalPrice  = $validatedAttrs['normal_price'][$currency];
                         if (empty($normalPrice)) {
                             $errors[] = "There is a special_price for currency {$currency}, but normal_price for this currency is absent";
-                        } elseif ($specialPrice >= $normalPrice) {
-                            $errors[] = "special_price ({$specialPrice} {$currency}) must be lower than normal_price ({$normalPrice} {$currency})";
                         } else {
                             $validatedAttrs['special_price'][$currency] = $specialPrice;
                         }
                     }
+                }
+                if (empty($validatedAttrs['special_price'][self::BASE_CURRENCY])) {
+                    $errors[] = "Provide special_price for base currency (" . self::BASE_CURRENCY . ')';
                 }
             }
         }
@@ -178,6 +190,46 @@ class Product
      */
     protected function transform(array $attrs): array
     {
+        // We've already checked that rates are available
+        $rates = $this->getMapper()->getRates();
+
+        if (empty($attrs['normal_price_override'])) {
+            $basePrice = $attrs['normal_price'][self::BASE_CURRENCY];
+            foreach ($attrs['normal_price'] as $currency => $price) {
+                if ($currency != self::BASE_CURRENCY) {
+                    $attrs['normal_price'][$currency] = $basePrice * $rates[$currency];
+                }
+            }
+        }
+
+        if (empty($attrs['special_price_override'])) {
+            $basePrice = $attrs['special_price'][self::BASE_CURRENCY];
+            foreach ($attrs['special_price'] as $currency => $price) {
+                if ($currency != self::BASE_CURRENCY) {
+                    $attrs['special_price'][$currency] = $basePrice * $rates[$currency];
+                }
+            }
+        }
+
         return $attrs;
+    }
+
+    /**
+     * @param array $attrs
+     * @return array
+     */
+    protected function checkSpecialPrice(array $attrs): array
+    {
+        $errors = [];
+        if (!empty($attrs['special_price'])) {
+            foreach ($attrs['special_price'] as $currency => $specialPrice) {
+                $normalPrice  = $attrs['normal_price'][$currency];
+                if ($specialPrice >= $normalPrice) {
+                    $errors[] = "special_price ({$specialPrice} {$currency}) must be lower than normal_price ({$normalPrice} {$currency})";
+                }
+            }
+        }
+
+        return $errors;
     }
 }
