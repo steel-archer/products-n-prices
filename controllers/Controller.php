@@ -52,6 +52,7 @@ abstract class Controller
      */
     public function render(string $view, array $attrs): void
     {
+        $attrs['csrfToken'] = $_SESSION['csrfToken'];
         static $twig = null;
 
         if ($twig === null) {
@@ -63,6 +64,17 @@ abstract class Controller
             echo $twig->render("{$view}.twig", $attrs);
         } catch (LoaderError|RuntimeError|SyntaxError $ex) {
             throw new \Exception($ex, "Twig exception");
+        }
+    }
+
+    /**
+     * Checks CSRF token
+     */
+    public function checkCsrfToken(): void
+    {
+        if (!hash_equals($_SESSION['csrfToken'], $this->request['csrfToken'])) {
+            echo "Invalid CSRF token";
+            exit(1);
         }
     }
 }

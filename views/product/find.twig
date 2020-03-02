@@ -1,5 +1,6 @@
 <h1>Find results:</h1>
 <form name="find" method="post">
+    <input type="hidden" name="csrfToken" value="{{ csrfToken }}">
     Product code: <input type="text" name="code" id="code" size="20" value="{{ code }}">
     <input type="submit" name="submit" value="Find">
     <br><br>

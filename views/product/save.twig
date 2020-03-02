@@ -1,5 +1,6 @@
 <h1>Save results:</h1>
 <form name="save" method="post">
+    <input type="hidden" name="csrfToken" value="{{ csrfToken }}">
     {# Yes, I know that table layouts are obsolete, but for primitive template it should be ok#}
     <table>
         <tr>

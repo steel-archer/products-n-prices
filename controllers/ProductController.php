@@ -20,6 +20,7 @@ class ProductController extends Controller
         if (!isset($this->request['submit'])) {
             $params = [];
         } else {
+            $this->checkCsrfToken();
             $code   = trim($this->request['code']);
             $result = (new Product(new ProductMapper()))->find($code);
             $params = [
@@ -41,6 +42,7 @@ class ProductController extends Controller
         if (!isset($this->request['submit'])) {
             $params = [];
         } else {
+            $this->checkCsrfToken();
             $code  = trim($this->request['code']);
             $attrs = trimArray($this->request['attrs']);
             $params = [

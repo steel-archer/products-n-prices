@@ -1,5 +1,11 @@
 <?php
 
+session_start();
+
+if (empty($_SESSION['csrfToken'])) {
+    $_SESSION['csrfToken'] = bin2hex(random_bytes(32));
+}
+
 require __DIR__ . '/vendor/autoload.php';
 
 $action = $_REQUEST['action'];
