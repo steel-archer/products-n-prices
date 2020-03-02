@@ -13,15 +13,14 @@ class ProductController extends Controller
 {
     /**
      * Finds a product
-     * @param array $request
      * @throws \Exception
      */
-    public function find(array $request): void
+    public function find(): void
     {
-        if (empty($request['code'])) {
+        if (empty($this->request['code'])) {
             $params = [];
         } else {
-            $code   = trim($request['code']);
+            $code   = trim($this->request['code']);
             $result = (new Product(new ProductMapper()))->find($code);
             $params = [
                 'code'   => $code,
@@ -34,19 +33,20 @@ class ProductController extends Controller
 
     /**
      * Saves a product
-     * @param string $code
-     * @param array $attrs
      * @throws \Exception
      */
-    public function save(string $code, array $attrs): void
+    public function save(): void
     {
-        $errors = (new Product(new ProductMapper()))->save($code, $attrs);
+        if (empty($this->request['code']) || empty($this->request['attrs'])) {
+            $params = [];
+        } else {
+            $code  = trim($this->request['code']);
+            $attrs = trimArray($this->request['attrs']);
+            $params = [
+                'errors' => (new Product(new ProductMapper()))->save($code, $attrs),
+            ];
+        }
 
-        $this->render(
-            'product/save',
-            [
-                'errors' => $errors,
-            ]
-        );
+        $this->render('product/save', $params);
     }
 }

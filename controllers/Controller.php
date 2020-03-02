@@ -13,6 +13,38 @@ use Twig\Error\SyntaxError;
 abstract class Controller
 {
     /**
+     * @var array
+     */
+    protected $request;
+
+    /**
+     * @return array
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param array $request
+     * @return Controller
+     */
+    public function setRequest(array $request)
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+    /**
+     * Controller constructor.
+     * @param array $request
+     */
+    public function __construct(array $request = [])
+    {
+        $this->request = $request;
+    }
+
+    /**
      * Renders a html view
      * @param string $view
      * @param array $attrs
