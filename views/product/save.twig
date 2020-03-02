@@ -1,10 +1,106 @@
-Save results:
-{% if errors is empty %}
-    No errors
-{% else %}
-    <ul>
-    {% for error in errors %}
-        <li>{{ error }}</li>
-    {% endfor %}
-    </ul>
-{% endif %}
+<h1>Save results:</h1>
+<form name="save" method="post">
+    {# Yes, I know that table layouts are obsolete, but for primitive template it should be ok#}
+    <table>
+        <tr>
+            <td>
+                Product code:
+            </td>
+            <td>
+                <input type="text" name="code" size="20" value="{{ code }}">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Description:
+            </td>
+            <td>
+                <textarea name="attrs[description]" rows="4" cols="50">{{ attrs.description }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Normal price override:
+            </td>
+            <td>
+                {% if attrs.normal_price_override %}
+                    {% set npo = true %}
+                {% else %}
+                    {% set npo = false %}
+                {% endif %}
+                <input type="radio" id="npot" name="attrs[normal_price_override]" value="1" {% if npo == true %}checked="checked" {% endif %}>
+                <label for="npot">true</label>
+                <input type="radio" id="npof" name="attrs[normal_price_override]" value="0" {% if npo == false %}checked="checked" {% endif %}>
+                <label for="npof">false</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Normal price:
+            </td>
+            <td>
+                <table>
+                    {% for currency in currencies %}
+                        <tr>
+                            <td>
+                                {{ currency }}:
+                            </td>
+                            <td>
+                                <input type="number" name="attrs[normal_price][{{ currency }}]" value="{{ attribute(attrs.normal_price, currency) }}" size="10">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Special price override:
+            </td>
+            <td>
+                {% if attrs.special_price_override %}
+                    {% set spo = true %}
+                {% else %}
+                    {% set spo = false %}
+                {% endif %}
+                <input type="radio" id="spot" name="attrs[special_price_override]" value="1" {% if spo == true %}checked="checked" {% endif %}>
+                <label for="spot">true</label>
+                <input type="radio" id="spof" name="attrs[special_price_override]" value="0" {% if spo == false %}checked="checked" {% endif %}>
+                <label for="spof">false</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Special price:
+            </td>
+            <td>
+                <table>
+                    {% for currency in currencies %}
+                        <tr>
+                            <td>
+                                {{ currency }}:
+                            </td>
+                            <td>
+                                <input type="number" name="attrs[special_price][{{ currency }}]" value="{{ attribute(attrs.special_price, currency) }}"size="10">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <input type="submit" name="submit" value="Save">
+    <br><br>
+    {% if errors is defined %}
+        {% if errors is empty %}
+            No errors
+        {% else %}
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+</form>

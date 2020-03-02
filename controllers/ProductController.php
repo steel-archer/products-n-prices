@@ -17,7 +17,7 @@ class ProductController extends Controller
      */
     public function find(): void
     {
-        if (empty($this->request['code'])) {
+        if (!isset($this->request['submit'])) {
             $params = [];
         } else {
             $code   = trim($this->request['code']);
@@ -37,16 +37,20 @@ class ProductController extends Controller
      */
     public function save(): void
     {
-        if (empty($this->request['code']) || empty($this->request['attrs'])) {
+        $product = new Product(new ProductMapper());
+        if (!isset($this->request['submit'])) {
             $params = [];
         } else {
             $code  = trim($this->request['code']);
             $attrs = trimArray($this->request['attrs']);
             $params = [
-                'errors' => (new Product(new ProductMapper()))->save($code, $attrs),
+                'code'   => $code,
+                'attrs'  => $attrs,
+                'errors' => $product->save($code, $attrs),
             ];
         }
 
+        $params['currencies'] = array_keys($product->getCurrencyRates());
         $this->render('product/save', $params);
     }
 }

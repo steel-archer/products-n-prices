@@ -94,6 +94,13 @@ class ProductMapper extends Mapper
                 $this->getConnection()->query($query, $params);
             }
 
+            // Remove existing special prices if no special prices were provided
+            if (empty($attrs['special_price'])) {
+                $params = ['product_code' => $code];
+                $query  = "DELETE FROM special_prices WHERE product_code = ?:product_code";
+                $this->getConnection()->query($query, $params);
+            }
+
             if (is_array($attrs['special_price'])) {
                 $values = [];
                 foreach ($attrs['special_price'] as $currency => $price) {

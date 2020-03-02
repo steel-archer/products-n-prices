@@ -64,6 +64,10 @@ class Product
      */
     public function save(string $code, array $attrs): array
     {
+        if (empty($code)) {
+            $errors[] = 'Product code is empty';
+            return $errors;
+        }
         $result = $this->validate($attrs);
         $errors = $result['errors'];
         if (empty($errors)) {
@@ -89,7 +93,7 @@ class Product
         $validatedAttrs = [];
 
         try {
-            $rates = $this->getMapper()->getRates();
+            $rates = $this->getCurrencyRates();
         } catch (\Exception $ex) {
             // And that also means that we can't validate currencies
             $errors[] = $ex->getMessage();
@@ -131,8 +135,10 @@ class Product
                     }
                 }
             }
-            if (empty($validatedAttrs['normal_price'][self::BASE_CURRENCY])) {
-                $errors[] = "Provide normal_price for base currency (" . self::BASE_CURRENCY . ')';
+            foreach ($this->getCurrencyRates() as $currency => $rate) {
+                if (empty($validatedAttrs['normal_price'][$currency])) {
+                    $errors[] = "Provide normal_price for currency ({$currency})";
+                }
             }
         }
 
@@ -159,18 +165,24 @@ class Product
                     if (!array_key_exists($currency, $rates)) {
                         $errors[] = "Unknown currency: {$currency}";
                     } else {
-                        // If the special price is provided, it should be lower than the normal price
                         $specialPrice = filter_var($price, FILTER_VALIDATE_FLOAT);
-                        $normalPrice  = $validatedAttrs['normal_price'][$currency];
-                        if (empty($normalPrice)) {
-                            $errors[] = "There is a special_price for currency {$currency}, but normal_price for this currency is absent";
-                        } else {
-                            $validatedAttrs['special_price'][$currency] = $specialPrice;
+                        if (!empty($specialPrice)) {
+                            $normalPrice  = $validatedAttrs['normal_price'][$currency];
+                            if (empty($normalPrice)) {
+                                $errors[] = "There is a special_price for currency {$currency}, but normal_price for this currency is absent";
+                            } else {
+                                $validatedAttrs['special_price'][$currency] = $specialPrice;
+                            }
                         }
                     }
                 }
-                if (empty($validatedAttrs['special_price'][self::BASE_CURRENCY])) {
-                    $errors[] = "Provide special_price for base currency (" . self::BASE_CURRENCY . ')';
+                // We should have either no special prices or special prices for all currencies
+                if (count($validatedAttrs['special_price']) >= 1) {
+                    foreach ($this->getCurrencyRates() as $currency => $rate) {
+                        if (empty($validatedAttrs['special_price'][$currency])) {
+                            $errors[] = "Provide special_price for currency ({$currency})";
+                        }
+                    }
                 }
             }
         }
@@ -191,7 +203,7 @@ class Product
     protected function transform(array $attrs): array
     {
         // We've already checked that rates are available
-        $rates = $this->getMapper()->getRates();
+        $rates = $this->getCurrencyRates();
 
         if (empty($attrs['normal_price_override'])) {
             $basePrice = $attrs['normal_price'][self::BASE_CURRENCY];
@@ -231,5 +243,13 @@ class Product
         }
 
         return $errors;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCurrencyRates(): array
+    {
+        return $this->getMapper()->getRates();
     }
 }
