@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS `products_n_prices`;
 
-CREATE USER 'products_n_prices'@'localhost' IDENTIFIED BY '##PASSWORD##';
+CREATE USER IF NOT EXISTS 'products_n_prices'@'localhost' IDENTIFIED BY '##PASSWORD##';
 
 GRANT ALL PRIVILEGES ON products_n_prices.* TO 'products_n_prices'@'localhost';
 
