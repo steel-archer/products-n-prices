@@ -32,7 +32,7 @@ Getting Started
 ---------------
 * Clone repo from [https://github.com/steel-archer/products-n-prices](https://github.com/steel-archer/products-n-prices)
 ```
-git clone https://github.com/steel-archer/products-n-prices products-n-prices
+git clone git@github.com:steel-archer/products-n-prices.git
 ```
 * Go to your project directory.
 ```
