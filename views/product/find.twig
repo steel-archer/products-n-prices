@@ -5,10 +5,15 @@
     <input type="submit" name="submit" value="Find">
     <br><br>
     {%  if code is not empty %}
-        {% if result is empty %}
+        {% if product is empty %}
             No product with such name
         {% else %}
-            <textarea rows="5" cols="70">{{ result }}</textarea>
+            <textarea rows="5" cols="70">{{ product }}</textarea>
         {% endif %}
+        <ul>
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
 </form>

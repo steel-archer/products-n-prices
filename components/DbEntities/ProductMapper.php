@@ -9,6 +9,7 @@ namespace PNP\Components\DbEntities;
 class ProductMapper extends Mapper
 {
     public const ERROR_CURRENCIES = "Can't get currencies rates";
+    public const ERROR_UNKNOWN = 'Unknown database error';
 
     /**
      * @param string $code
@@ -16,8 +17,14 @@ class ProductMapper extends Mapper
      */
     public function find(string $code): array
     {
-        $params   = ['code' => $code];
-        $query    = 'SELECT
+        $result = [
+            'product' => [],
+            'errors'  => [],
+        ];
+
+        try {
+            $params   = ['code' => $code];
+            $query    = 'SELECT
                         description,
                         normal_price_override,
                         special_price_override
@@ -25,27 +32,30 @@ class ProductMapper extends Mapper
                         products
                     WHERE
                         code = ?:code';
-        $products = $this->getConnection()->query($query, $params)->row();
+            $products = $this->getConnection()->query($query, $params)->row();
 
-        if (!empty($products)) {
-            $query         = 'SELECT currency_code, price FROM normal_prices WHERE product_code = ?:code';
-            $normal_prices = $this->getConnection()->query($query, $params)->vars();
+            if (!empty($products)) {
+                $query         = 'SELECT currency_code, price FROM normal_prices WHERE product_code = ?:code';
+                $normal_prices = $this->getConnection()->query($query, $params)->vars();
 
-            if (!empty($normal_prices)) {
-                $products['normal_price'] = $normal_prices;
+                if (!empty($normal_prices)) {
+                    $products['normal_price'] = $normal_prices;
+                }
+
+                $query         = 'SELECT currency_code, price FROM special_prices WHERE product_code = ?:code';
+                $special_prices = $this->getConnection()->query($query, $params)->vars();
+
+                if (!empty($special_prices)) {
+                    $products['special_price'] = $special_prices;
+                }
+
+                $result['product'] = $products;
             }
-
-            $query         = 'SELECT currency_code, price FROM special_prices WHERE product_code = ?:code';
-            $special_prices = $this->getConnection()->query($query, $params)->vars();
-
-            if (!empty($special_prices)) {
-                $products['special_price'] = $special_prices;
-            }
-
-            return $products;
+        } catch (\Exception $ex) {
+            $result['errors'][] = self::ERROR_UNKNOWN;
         }
 
-        return [];
+        return $result;
     }
 
     /**

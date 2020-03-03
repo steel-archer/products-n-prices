@@ -23,9 +23,13 @@ class ProductController extends Controller
             $this->checkCsrfToken();
             $code   = trim($this->request['code']);
             $result = (new Product(new ProductMapper()))->find($code);
+            if (!empty($result['product'])) {
+                $result['product'] = json_encode($result['product'], JSON_PRESERVE_ZERO_FRACTION);
+            }
             $params = [
-                'code'   => $code,
-                'result' => $result ? json_encode($result, JSON_PRESERVE_ZERO_FRACTION) : [],
+                'code'    => $code,
+                'product' => $result['product'] ?? [],
+                'errors'  => $result['errors'] ?? [],
             ];
         }
 
