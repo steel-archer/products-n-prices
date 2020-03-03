@@ -9,7 +9,8 @@
     ],
     "require": {
         "twig/twig": "^3.0",
-        "go/db": ">=2.2.13"
+        "go/db": ">=2.2.13",
+        "phpunit/phpunit": "^8"
     },
     "autoload": {
         "psr-4": {

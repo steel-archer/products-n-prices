@@ -16,6 +16,18 @@ class Product
      */
     public const BASE_CURRENCY = 'GBP';
 
+    public const ERROR_EMPTY_PRODUCT_CODE = 'Product code is empty';
+    public const ERROR_ABSENT_DESCRIPTION = 'description is absent';
+    public const ERROR_ABSENT_NORMAL_PRICE = 'normal_price is absent or is not an array';
+    public const ERROR_NO_NORMAL_PRICE = 'Provide normal_price for currency (%s)';
+    public const ERROR_NO_SPECIAL_PRICE = 'Provide special_price for currency (%s)';
+    public const ERROR_NPO_NOT_BOOL = 'normal_price_override is not of boolean type';
+    public const ERROR_SPO_NOT_BOOL = 'special_price_override is not of boolean type';
+    public const ERROR_UNKNOWN_CURRENCY = 'Unknown currency: %s';
+    public const ERROR_SPECIAL_PRICE_NOT_ARRAY = 'special_price must be an array (if provided)';
+    public const ERROR_SP_WITHOUT_NP = 'There is a special_price for currency %s, but normal_price for this currency is absent';
+    public const ERROR_SP_BIGGER_EQUAL_THAN_NP = 'special_price (%3$F %1$s) must be lower than normal_price (%2$F %1$s)';
+
     /**
      * Product constructor.
      * @param Mapper $mapper
@@ -65,7 +77,7 @@ class Product
     public function save(string $code, array $attrs): array
     {
         if (empty($code)) {
-            $errors[] = 'Product code is empty';
+            $errors[] = self::ERROR_EMPTY_PRODUCT_CODE;
             return $errors;
         }
         $result = $this->validate($attrs);
@@ -101,7 +113,7 @@ class Product
 
         // Description
         if (!isset($attrs['description'])) {
-            $errors[] = 'description is absent';
+            $errors[] = self::ERROR_ABSENT_DESCRIPTION;
         } else {
             $validatedAttrs['description'] = filter_var($attrs['description'], FILTER_SANITIZE_STRING);
         }
@@ -116,28 +128,26 @@ class Product
                 FILTER_NULL_ON_FAILURE
             );
             if (is_null($validatedAttrs['normal_price_override'])) {
-                $errors[] = "normal_price_override is not of boolean type";
+                $errors[] = self::ERROR_NPO_NOT_BOOL;
             }
         }
 
         // Normal price
         if (!empty($rates)) {
-            if (empty($attrs['normal_price'])) {
-                $errors[] = 'normal_price is absent';
-            } elseif (!is_array($attrs['normal_price'])) {
-                $errors[] = 'normal_price must be an array';
+            if (empty($attrs['normal_price']) || !is_array($attrs['normal_price'])) {
+                $errors[] = self::ERROR_ABSENT_NORMAL_PRICE;
             } else {
                 foreach ($attrs['normal_price'] as $currency => $price) {
                     if (!array_key_exists($currency, $rates)) {
-                        $errors[] = "Unknown currency: {$currency}";
+                        $errors[] = sprintf(self::ERROR_UNKNOWN_CURRENCY, $currency);
                     } else {
                         $validatedAttrs['normal_price'][$currency] = filter_var($price, FILTER_VALIDATE_FLOAT);
                     }
                 }
-            }
-            foreach ($this->getCurrencyRates() as $currency => $rate) {
-                if (empty($validatedAttrs['normal_price'][$currency])) {
-                    $errors[] = "Provide normal_price for currency ({$currency})";
+                foreach ($this->getCurrencyRates() as $currency => $rate) {
+                    if (empty($validatedAttrs['normal_price'][$currency])) {
+                        $errors[] = sprintf(self::ERROR_NO_NORMAL_PRICE, $currency);
+                    }
                 }
             }
         }
@@ -152,35 +162,34 @@ class Product
                 FILTER_NULL_ON_FAILURE
             );
             if (is_null($validatedAttrs['special_price_override'])) {
-                $errors[] = "special_price_override is not of boolean type";
+                $errors[] = self::ERROR_SPO_NOT_BOOL;
             }
         }
 
         // Special price
-        if (!empty($rates)) {
+        if (!empty($rates) && !empty($attrs['special_price'])) {
             if (!is_array($attrs['special_price'])) {
-                $errors[] = 'special_price must be an array';
+                $errors[] = self::ERROR_SPECIAL_PRICE_NOT_ARRAY;
             } else {
                 foreach ($attrs['special_price'] as $currency => $price) {
                     if (!array_key_exists($currency, $rates)) {
-                        $errors[] = "Unknown currency: {$currency}";
+                        $errors[] = sprintf(self::ERROR_UNKNOWN_CURRENCY, $currency);
                     } else {
                         $specialPrice = filter_var($price, FILTER_VALIDATE_FLOAT);
                         if (!empty($specialPrice)) {
-                            $normalPrice  = $validatedAttrs['normal_price'][$currency];
+                            $normalPrice  = $validatedAttrs['normal_price'][$currency] ?? null;
                             if (empty($normalPrice)) {
-                                $errors[] = "There is a special_price for currency {$currency}, but normal_price for this currency is absent";
-                            } else {
-                                $validatedAttrs['special_price'][$currency] = $specialPrice;
+                                $errors[] = sprintf(self::ERROR_SP_WITHOUT_NP, $currency);
                             }
+                            $validatedAttrs['special_price'][$currency] = $specialPrice;
                         }
                     }
                 }
                 // We should have either no special prices or special prices for all currencies
-                if (count($validatedAttrs['special_price']) >= 1) {
+                if (!empty($validatedAttrs['special_price']) && count($validatedAttrs['special_price']) >= 1) {
                     foreach ($this->getCurrencyRates() as $currency => $rate) {
                         if (empty($validatedAttrs['special_price'][$currency])) {
-                            $errors[] = "Provide special_price for currency ({$currency})";
+                            $errors[] = sprintf(self::ERROR_NO_SPECIAL_PRICE, $currency);
                         }
                     }
                 }
@@ -237,7 +246,12 @@ class Product
             foreach ($attrs['special_price'] as $currency => $specialPrice) {
                 $normalPrice  = $attrs['normal_price'][$currency];
                 if ($specialPrice >= $normalPrice) {
-                    $errors[] = "special_price ({$specialPrice} {$currency}) must be lower than normal_price ({$normalPrice} {$currency})";
+                    $errors[] = sprintf(
+                        self::ERROR_SP_BIGGER_EQUAL_THAN_NP,
+                        $currency,
+                        $normalPrice,
+                        $specialPrice
+                    );
                 }
             }
         }

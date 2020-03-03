@@ -8,6 +8,8 @@ namespace PNP\Components\DbEntities;
  */
 class ProductMapper extends Mapper
 {
+    public const ERROR_CURRENCIES = "Can't get currencies rates";
+
     /**
      * @param string $code
      * @return array
@@ -138,7 +140,7 @@ class ProductMapper extends Mapper
         $query  = 'SELECT code, exchange_rate FROM currencies';
         $result = $this->getConnection()->query($query)->vars();
         if (empty($result)) {
-            throw new \Exception("Can't get currencies rates");
+            throw new \Exception(self::ERROR_CURRENCIES);
         }
         return $result;
     }
