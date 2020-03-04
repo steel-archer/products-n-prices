@@ -5,7 +5,7 @@
  * @param  mixed $data Some data.
  * @return void
  */
-function pr($data)
+function pr($data): void
 {
     $backtrace = debug_backtrace()[0];
     $output    = "{$backtrace['file']}:{$backtrace['line']}\n" . print_r($data, true) . "\n\n";

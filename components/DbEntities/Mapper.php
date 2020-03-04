@@ -11,7 +11,7 @@ use \go\DB\DB;
 abstract class Mapper
 {
     /**
-     * @var \go\DB\DB
+     * @var DB
      */
     private $connection;
 
@@ -33,6 +33,9 @@ abstract class Mapper
         return $this;
     }
 
+    /**
+     * Mapper constructor.
+     */
     public function __construct()
     {
         $params = [

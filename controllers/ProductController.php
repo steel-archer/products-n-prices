@@ -13,7 +13,6 @@ class ProductController extends Controller
 {
     /**
      * Finds a product
-     * @throws \Exception
      */
     public function find(): void
     {
@@ -38,7 +37,6 @@ class ProductController extends Controller
 
     /**
      * Saves a product
-     * @throws \Exception
      */
     public function save(): void
     {
