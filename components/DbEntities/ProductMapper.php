@@ -9,7 +9,8 @@ namespace PNP\Components\DbEntities;
 class ProductMapper extends Mapper
 {
     public const ERROR_CURRENCIES = "Can't get currencies rates";
-    public const ERROR_UNKNOWN = 'Unknown database error';
+    public const ERROR_UNKNOWN_FIND = 'Unknown database error during find action';
+    public const ERROR_UNKNOWN_SAVE = 'Unknown database error during save action';
 
     /**
      * @param string $code
@@ -52,7 +53,7 @@ class ProductMapper extends Mapper
                 $result['product'] = $products;
             }
         } catch (\Exception $ex) {
-            $result['errors'][] = self::ERROR_UNKNOWN;
+            $result['errors'][] = self::ERROR_UNKNOWN_FIND;
         }
 
         return $result;
@@ -134,7 +135,7 @@ class ProductMapper extends Mapper
             $this->getConnection()->query('COMMIT');
         } catch (\Exception $ex) {
             $this->getConnection()->query('ROLLBACK');
-            $errors[] = "Can't save a product with code {$code}, error: {$ex->getMessage()}";
+            $errors[] = self::ERROR_UNKNOWN_SAVE;
         }
 
         return $errors;
