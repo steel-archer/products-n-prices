@@ -2,9 +2,7 @@
 
 namespace PNP\Controllers;
 
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
+use PHPUnit\Exception;
 
 /**
  * Class Controller
@@ -53,17 +51,17 @@ abstract class Controller
     public function render(string $view, array $attrs): void
     {
         $attrs['csrfToken'] = $_SESSION['csrfToken'];
-        static $twig = null;
-
-        if ($twig === null) {
-            $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/../views');
-            $twig   = new \Twig\Environment($loader);
-        }
 
         try {
+            static $twig = null;
+            if ($twig === null) {
+                $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/../views');
+                $twig   = new \Twig\Environment($loader);
+            }
             echo $twig->render("{$view}.twig", $attrs);
-        } catch (LoaderError|RuntimeError|SyntaxError $ex) {
-            throw new \Exception($ex, "Twig exception");
+        } catch (\Exception $ex) {
+            echo 'Twig exception';
+            exit(1);
         }
     }
 
