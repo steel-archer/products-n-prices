@@ -2,8 +2,6 @@
 
 namespace PNP\Controllers;
 
-use PHPUnit\Exception;
-
 /**
  * Class Controller
  * @package PNP\Controllers
